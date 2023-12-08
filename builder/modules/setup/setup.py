@@ -8,9 +8,8 @@ import datetime as dt
 import os
 
 class setup():
-    
     def __init__(self):
-        self.setup = self
+        self.setup = ""
 
     def filter_df(data_frame, column, condition, type='eq'):
         """
