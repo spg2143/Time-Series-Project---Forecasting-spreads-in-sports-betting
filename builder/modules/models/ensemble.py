@@ -8,8 +8,11 @@ This script will write a class in which we store functions for the enesmble calc
 
 
 
-class ensemble_wrapper(Arimax, Var, Xgboost):
+class ensemble_wrapper():
     
     def __init__(self):
-        self.prediction_frame: pd.DataFrame
-        self.
+        self.a = 1
+        self.b = 2
+    
+    def add_ab(self):
+        return self.a + self.b

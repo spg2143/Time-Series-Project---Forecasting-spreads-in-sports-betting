@@ -7,7 +7,7 @@ import matplotlib.ticker as mt
 import datetime as dt
 import os
 
-class setup():
+class Setup_function():
     def __init__(self):
         self.setup = ""
 
