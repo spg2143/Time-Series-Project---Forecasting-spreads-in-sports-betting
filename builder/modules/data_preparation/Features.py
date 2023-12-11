@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from setup import setup as s
-
-
+from modules.setup_functions.setup_functions import Setup_function as s
+##initialize Weather feature 
+weather = pd.read_csv("data/weather.csv", index_col=0)
 spreads = pd.read_csv('data/spreadspoke_scores.csv')
 teams = pd.read_csv('data/nfl_teams.csv')
 stadiums = pd.read_csv('data/nfl_stadiums.csv', header=0,encoding='unicode_escape')
@@ -23,9 +23,17 @@ data['team_home'] = data.team_home.map(teams.set_index('team_name')['team_id'].t
 data['team_away'] = data.team_away.map(teams.set_index('team_name')['team_id'].to_dict())
 
 data = s.filter_df(data,'schedule_playoff', False, 'eq')
-data = s.filter_df(data, 'stadium_neutral', False, 'eq')
+weather = s.filter_df(weather, 'schedule_playoff', False, 'eq')
 data = s.filter_df(data, 'schedule_season', 2008, 'greq')
 data = s.filter_df(data, 'schedule_season', 2018, 'leq')
+
+replace_columns = ['weather_temperature', 'weather_wind_mph', 'weather_humidity',
+                   'winner', 'loser', 'home_team_wins', 'home_team_losses', 'away_team_wins', 'away_team_losses']
+
+# Replace columns in 'data' with columns from 'weather'
+data[replace_columns] = weather[replace_columns]
+
+data = s.filter_df(data, 'stadium_neutral', False, 'eq')
 
 data['spread_favorite'] = np.where(data['team_favorite_id'] == data['team_away'],
                                        np.abs(data['spread_favorite']),
@@ -47,19 +55,7 @@ data = replace_values_in_columns(data, ['team_home', 'team_away'], 'St. Louis Ra
 data = replace_values_in_columns(data, ['team_home', 'team_away'], 'San Diego Chargers', 'Los Angeles Chargers')
 data = replace_values_in_columns(data, ['stadium_type'], 'retractable', 'indoor')
 
-def calculate_stats(dataframe, groupby_cols, agg_col):
-    '''
-    Calculate statistics for a column(s) grouped by specified column(s)
-    dataframe: DataFrame to perform aggregation on
-    groupby_cols: list of columns to group by
-    agg_col: column to perform aggregation on
-    '''
-    stats = dataframe.groupby(groupby_cols)[agg_col].agg(['mean', 'median', 'min', 'max', lambda x: x.quantile(0.25), lambda x: x.quantile(0.75)])
-    stats.rename(columns={
-        '<lambda_0>': '25th Percentile',
-        '<lambda_1>': '75th Percentile'
-    }, inplace=True)
-    return stats
+
 
 stadium_capacity_mapping = {
     'Texas Stadium': '66,000',
@@ -88,3 +84,15 @@ stadium_surface = {
 data['stadium_surface'] = data.apply(
     lambda row: stadium_surface.get(row['stadium'], row['stadium_surface']), axis=1
 )
+
+new_data = data[['schedule_date', 'schedule_season', 'schedule_week', 'home_away', 'stadium_surface', 'stadium_type', 'stadium_capacity', 'spread_favorite',
+                'weather_temperature', 'weather_wind_mph', 'weather_humidity', 'weather_detail',
+                   'winner', 'loser', 'home_team_wins', 'home_team_losses', 'away_team_wins', 'away_team_losses']]
+
+
+new_data['schedule_date'] = pd.to_datetime(new_data['schedule_date'])
+
+new_data.index = new_data['schedule_date']
+
+new_data.replace([np.inf, -np.inf], 0, inplace=True)
+

@@ -2,14 +2,8 @@ import pandas as pd
 import itertools
 from sklearn.metrics import mean_squared_error
 import numpy as np
-import sys
-sys.path.append('/Users/rhonishnair/Time-Series-Project---Forecasting-spreads-in-sports-betting/builder/modules')
-
-from setup_functions.setup_functions import Setup_function as s
-import sys
-sys.path.append('/Users/rhonishnair/Time-Series-Project---Forecasting-spreads-in-sports-betting/builder/modules')
-
 from Features import new_data
+from modules.setup_functions.setup_functions import Setup_function as s
 
 train = s.filter_df(new_data, 'schedule_season', 2016, 'leq')
 test = s.filter_df(new_data, 'schedule_season', 2017, 'greq')
