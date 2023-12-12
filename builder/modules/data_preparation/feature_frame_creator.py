@@ -9,8 +9,8 @@ pd.set_option('display.max_columns', None)  # or 1000
 
 # need data from 2008 season to 2018 season
 
-df1 = pd.read_csv('spreadspoke_scores.csv')
-teams = pd.read_csv("nfl_teams.csv",header=0)
+df1 = pd.read_csv('data/spreadspoke_scores.csv')
+teams = pd.read_csv("data/nfl_teams.csv",header=0)
 
 filter1 = df1[df1['schedule_season'] >= 2008]                 # how do we handle 72 degrees, 0 wind points?
 df = filter1[filter1['schedule_season'] <= 2018]
@@ -88,7 +88,7 @@ mean_wind = df['weather_wind_mph'].mean()
 df.loc[(df['weather_temperature'] == 72.0) & (df['weather_wind_mph'] == 0.0), "weather_temperature"] = mean_temp
 df.loc[(df['weather_temperature'] == mean_temp) & (df['weather_wind_mph'] == 0.0), "weather_wind_mph"] = mean_wind
 
-
+df.to_csv('data/weather.csv', index = 0)
 
 
 
